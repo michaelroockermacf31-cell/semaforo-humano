@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -5,14 +6,19 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Semáforo Humano</title>
 <style>
-body{font-family:Arial,sans-serif;background:#f4f6f9;color:#333;max-width:600px;margin:0 auto;padding:20px}.header{background:#2c3e50;color:white;padding:20px;border-radius:10px 10px 0 0;text-align:center}.container{background:white;padding:25px;border-radius:0 0 10px 10px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}.section{margin-bottom:25px;border-bottom:1px solid #eee;padding-bottom:15px}.section h3{color:#2980b9;margin-bottom:15px}.question{margin-bottom:15px}.question p{font-weight:600;margin-bottom:8px;font-size:0.95em}label{display:block;margin-bottom:6px;cursor:pointer;padding:8px;border-radius:5px}label:hover{background-color:#f0f8ff}input[type="radio"]{margin-right:10px}button{width:100%;padding:15px;background-color:#27ae60;color:white;border:none;border-radius:8px;font-size:1.1em;font-weight:bold;cursor:pointer}button:hover{background-color:#219150}#resultado{display:none;margin-top:25px;padding:20px;border-radius:8px;text-align:center}.verde{background-color:#d4edda;color:#155724;border:2px solid #c3e6cb}.amarillo{background-color:#fff3cd;color:#856404;border:2px solid #ffeeba}.rojo{background-color:#f8d7da;color:#721c24;border:2px solid #f5c6cb}#mensajeExpirado{display:none;text-align:center;padding:30px;background:#fff3cd;border:2px solid #ffeeba;border-radius:10px}#mensajeExpirado h2{color:#856404}.btn-whatsapp{display:inline-block;background-color:#25D366;color:white;padding:12px 25px;text-decoration:none;border-radius:8px;font-weight:bold;margin-top:10px}
+body{font-family:Arial,sans-serif;background:#f4f6f9;color:#333;max-width:600px;margin:0 auto;padding:20px}.header{background:#2c3e50;color:white;padding:20px;border-radius:10px 10px 0 0;text-align:center}.container{background:white;padding:25px;border-radius:0 0 10px 10px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}.section{margin-bottom:25px;border-bottom:1px solid #eee;padding-bottom:15px}.section h3{color:#2980b9;margin-bottom:15px}.question{margin-bottom:15px}.question p{font-weight:600;margin-bottom:8px;font-size:0.95em}label{display:block;margin-bottom:6px;cursor:pointer;padding:8px;border-radius:5px}label:hover{background-color:#f0f8ff}input[type="radio"]{margin-right:10px}input[type="text"]{width:100%;padding:10px;margin-bottom:12px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;font-size:1em}button{width:100%;padding:15px;background-color:#27ae60;color:white;border:none;border-radius:8px;font-size:1.1em;font-weight:bold;cursor:pointer;margin-top:10px}button:hover{background-color:#219150}#resultado{display:none;margin-top:25px;padding:20px;border-radius:8px;text-align:center}.verde{background-color:#d4edda;color:#155724;border:2px solid #c3e6cb}.amarillo{background-color:#fff3cd;color:#856404;border:2px solid #ffeeba}.rojo{background-color:#f8d7da;color:#721c24;border:2px solid #f5c6cb}#mensajeExpirado{display:none;text-align:center;padding:30px;background:#fff3cd;border:2px solid #ffeeba;border-radius:10px}#mensajeExpirado h2{color:#856404}.btn-whatsapp{display:inline-block;background-color:#25D366;color:white;padding:12px 25px;text-decoration:none;border-radius:8px;font-weight:bold;margin-top:10px}#btnPDF{background-color:#2980b9;display:none}#btnPDF:hover{background-color:#1f618d}.footer-autor{text-align:center;color:#888;font-size:0.8em;margin-top:20px}
 </style>
 </head>
 <body>
-<div class="header"><h2> SISTEMA SEMÁFORO HUMANO</h2><p>Evaluación Predictiva de Capacidad Operativa</p></div>
+<div class="header"><h2>🚦 SISTEMA SEMÁFORO HUMANO</h2><p>Evaluación Predictiva de Capacidad Operativa</p></div>
 <div class="container">
-<div id="mensajeExpirado"><h2>⏳ PERIODO DE PRUEBA FINALIZADO</h2><p>Los 7 días de prueba gratuita han concluido.</p><p>Para adquirir la licencia, contáctame:</p><a href="https://wa.me/56957577510" class="btn-whatsapp" target="_blank"> Contactar a Miguel Ángel</a></div>
+<div id="mensajeExpirado"><h2>⏳ PERIODO DE PRUEBA FINALIZADO</h2><p>Los 7 días de prueba gratuita han concluido.</p><p>Para adquirir la licencia, contáctame:</p><a href="https://wa.me/56957577510" class="btn-whatsapp" target="_blank">📲 Contactar a Miguel Ángel Cabezas</a></div>
 <form id="evaluacionForm">
+<div class="section"><h3>Datos del Trabajador</h3>
+<input type="text" id="nombreTrabajador" placeholder="Nombre completo" required>
+<input type="text" id="rutTrabajador" placeholder="RUT" required>
+<input type="text" id="empresaTrabajador" placeholder="Empresa / Obra" required>
+</div>
 <div class="section"><h3>1. Fatiga y Sueño</h3>
 <div class="question"><p>1. ¿Cuántas horas dormiste?</p>
 <label><input type="radio" name="q1" value="0" required> 7+ horas</label>
@@ -51,19 +57,53 @@ body{font-family:Arial,sans-serif;background:#f4f6f9;color:#333;max-width:600px;
 <button type="button" onclick="calcularRiesgo()">EVALUAR CAPACIDAD OPERATIVA</button>
 </form>
 <div id="resultado"></div>
+<button id="btnPDF" onclick="generarPDF()">📄 GENERAR INFORME PDF</button>
+<p class="footer-autor">Sistema desarrollado y licenciado por Miguel Ángel Cabezas</p>
 </div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script>
-const DIAS_PRUEBA=7;const hoy=new Date();let fechaInicio=localStorage.getItem('semaforo_inicio_prueba');
-if(!fechaInicio){localStorage.setItem('semaforo_inicio_prueba',hoy.toISOString());}
-else{const inicio=new Date(fechaInicio);const diasTranscurridos=Math.ceil(Math.abs(hoy-inicio)/(1000*60*60*24));if(diasTranscurridos>DIAS_PRUEBA){document.getElementById('evaluacionForm').style.display='none';document.getElementById('mensajeExpirado').style.display='block';}}
-function calcularRiesgo(){const form=document.getElementById('evaluacionForm');const formData=new FormData(form);let puntajeTotal=0;let preguntasRespondidas=0;
-for(let value of formData.values()){puntajeTotal+=parseInt(value);preguntasRespondidas++;}
+const FECHA_VENCIMIENTO=new Date('2026-09-21T23:59:59');const hoy=new Date();
+if(hoy>FECHA_VENCIMIENTO){document.getElementById('evaluacionForm').style.display='none';document.getElementById('mensajeExpirado').style.display='block';}
+let ultimoResultado=null;
+function calcularRiesgo(){
+const nombre=document.getElementById('nombreTrabajador').value.trim();
+const rut=document.getElementById('rutTrabajador').value.trim();
+const empresa=document.getElementById('empresaTrabajador').value.trim();
+if(!nombre||!rut||!empresa){alert("Completa Nombre, RUT y Empresa.");return;}
+const form=document.getElementById('evaluacionForm');const formData=new FormData(form);let puntajeTotal=0;let preguntasRespondidas=0;
+for(let pair of formData.entries()){if(pair[0].startsWith('q')){puntajeTotal+=parseInt(pair[1]);preguntasRespondidas++;}}
 if(preguntasRespondidas<8){alert("Responde todas las preguntas.");return;}
 const resultadoDiv=document.getElementById('resultado');let estado,clase,recomendacion;
 if(puntajeTotal<=3){estado="🟢 VERDE: CAPACIDAD COMPLETA";clase="verde";recomendacion="Apto para todo tipo de trabajo.";}
 else if(puntajeTotal<=7){estado="🟡 AMARILLO: OBSERVACIÓN";clase="amarillo";recomendacion="No operar maquinaria pesada ni trabajar en altura.";}
-else{estado=" ROJO: NO APTO";clase="rojo";recomendacion="Derivar a evaluación. No ingresar a zona de obra.";}
-resultadoDiv.className=clase;resultadoDiv.style.display="block";resultadoDiv.innerHTML=`<h2>${estado}</h2><p>${recomendacion}</p>`;}
+else{estado="🔴 ROJO: NO APTO";clase="rojo";recomendacion="Derivar a evaluación. No ingresar a zona de obra.";}
+resultadoDiv.className=clase;resultadoDiv.style.display="block";resultadoDiv.innerHTML=`<h2>${estado}</h2><p>${recomendacion}</p>`;
+ultimoResultado={nombre,rut,empresa,estado,recomendacion,puntajeTotal,fecha:new Date().toLocaleString('es-CL')};
+document.getElementById('btnPDF').style.display='block';
+}
+function generarPDF(){
+if(!ultimoResultado){alert("Primero evalúa la capacidad operativa.");return;}
+const{jsPDF}=window.jspdf;const doc=new jsPDF();
+doc.setFontSize(16);doc.text("SISTEMA SEMÁFORO HUMANO",20,20);
+doc.setFontSize(11);doc.text("Evaluación Predictiva de Capacidad Operativa",20,28);
+doc.line(20,32,190,32);
+doc.setFontSize(12);
+doc.text(`Empresa: ${ultimoResultado.empresa}`,20,42);
+doc.text(`Trabajador: ${ultimoResultado.nombre}`,20,50);
+doc.text(`RUT: ${ultimoResultado.rut}`,20,58);
+doc.text(`Fecha y hora: ${ultimoResultado.fecha}`,20,66);
+doc.line(20,72,190,72);
+doc.setFontSize(14);
+doc.text(`Resultado: ${ultimoResultado.estado.replace(/[🟢🟡🔴]/g,'')}`,20,84);
+doc.setFontSize(11);
+doc.text(`Puntaje total: ${ultimoResultado.puntajeTotal}`,20,92);
+doc.text(`Recomendación: ${ultimoResultado.recomendacion}`,20,100,{maxWidth:170});
+doc.line(20,130,190,130);
+doc.text("Firma trabajador: ______________________________",20,150);
+doc.text("Firma supervisor: ______________________________",20,165);
+doc.text("Sistema desarrollado y licenciado por Miguel Ángel Cabezas",20,285);
+doc.save(`informe_${ultimoResultado.nombre.replace(/\s+/g,'_')}_${Date.now()}.pdf`);
+}
 </script>
 </body>
 </html>
