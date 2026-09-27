@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semáforo Humano</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2c3e50">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Semáforo">
+<style>
+body{font-family:Arial,sans-serif;background:#f4f6f9;color:#333;max-width:600px;margin:0 auto;padding:20px}.header{background:#2c3e50;color:white;padding:20px;border-radius:10px 10px 0 0;text-align:center}.container{background:white;padding:25px;border-radius:0 0 10px 10px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}.section{margin-bottom:25px;border-bottom:1px solid #eee;padding-bottom:15px}.section h3{color:#2980b9;margin-bottom:15px}.question{margin-bottom:15px}.question p{font-weight:600;margin-bottom:8px;font-size:0.95em}label{display:block;margin-bottom:6px;cursor:pointer;padding:8px;border-radius:5px}label:hover{background-color:#f0f8ff}input[type="radio"]{margin-right:10px}input[type="text"]{width:100%;padding:10px;margin-bottom:12px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;font-size:1em}button{width:100%;padding:15px;background-color:#27ae60;color:white;border:none;border-radius:8px;font-size:1.1em;font-weight:bold;cursor:pointer;margin-top:10px}button:hover{background-color:#219150}#resultado{display:none;margin-top:25px;padding:20px;border-radius:8px;text-align:center}#resultadoATS{display:none;margin-top:15px;padding:15px;border-radius:8px;text-align:center;font-weight:bold}.verde{background-color:#d4edda;color:#155724;border:2px solid #c3e6cb}.amarillo{background-color:#fff3cd;color:#856404;border:2px solid #ffeeba}.rojo{background-color:#f8d7da;color:#721c24;border:2px solid #f5c6cb}#mensajeExpirado{display:none;text-align:center;padding:30px;background:#fff3cd;border:2px solid #ffeeba;border-radius:10px}#mensajeExpirado h2{color:#856404}.btn-whatsapp{display:inline-block;background-color:#25D366;color:white;padding:12px 25px;text-decoration:none;border-radius:8px;font-weight:bold;margin-top:10px}#btnPDF{background-color:#2980b9;display:none}#btnPDF:hover{background-color:#1f618d}#btnEnviar{background-color:#8e44ad;display:none}#btnEnviar:hover{background-color:#6c3483}.footer-autor{text-align:center;color:#888;font-size:0.8em;margin-top:20px}
+.licbar{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff3cd;color:#856404;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:600;margin:0 0 12px}
+.licbar button{width:auto;padding:6px 12px;font-size:13px;margin:0;background:transparent;color:#856404;border:1.5px solid #856404}
+#lockCode{width:100%;min-height:80px;padding:10px;border:1.5px solid #ccc;border-radius:6px;box-sizing:border-box;font-size:0.95em;margin-bottom:10px}
+.lockerr{color:#721c24;font-weight:600;margin:8px 0;display:none}
+</style>
+</head>
+<body>
+<div class="header"><h2>🚦 SISTEMA SEMÁFORO HUMANO</h2><p>Evaluación Predictiva de Capacidad Operativa</p></div>
+<div class="container">
+
+<div id="licBar" class="licbar" style="display:none"></div>
+
+<div id="mensajeExpirado" style="display:none"><h2 id="lockTitle">⏳ PERIODO DE PRUEBA FINALIZADO</h2><p id="lockMsg">Los 7 días de prueba gratuita han concluido.</p>
+<textarea id="lockCode" placeholder="Pega aquí el código de licencia que recibiste"></textarea>
+<p id="lockErr" class="lockerr"></p>
+<button type="button" onclick="activarLicencia()">Activar licencia</button>
+<p>Para adquirir la licencia, contáctame:</p><a href="https://wa.me/56957577510" class="btn-whatsapp" target="_blank">📲 Contactar a Miguel Ángel Cabezas</a></div>
+
+<form id="evaluacionForm">
+<div class="section"><h3>Datos del Trabajador</h3>
+<input type="text" id="nombreTrabajador" placeholder="Nombre completo" required>
+<input type="text" id="rutTrabajador" placeholder="RUT" required>
+<input type="text" id="empresaTrabajador" placeholder="Empresa / Obra" required>
+</div>
+<div class="section"><h3>1. Fatiga y Sueño</h3>
+<div class="question"><p>1. ¿Cuántas horas dormiste?</p>
+<label><input type="radio" name="q1" value="0" required> 7+ horas</label>
+<label><input type="radio" name="q1" value="2"> 5-6 horas</label>
+<label><input type="radio" name="q1" value="3"> Menos de 5 horas</label></div>
+<div class="question"><p>2. ¿Tu atención está lenta?</p>
+<label><input type="radio" name="q2" value="0" required> No, estoy alerta</label>
+<label><input type="radio" name="q2" value="2"> Un poco</label>
+<label><input type="radio" name="q2" value="3"> Sí, mucho</label></div></div>
+<div class="section"><h3>2. Salud Física</h3>
+<div class="question"><p>3. ¿Sientes dolor muscular?</p>
+<label><input type="radio" name="q3" value="0" required> No o leve</label>
+<label><input type="radio" name="q3" value="2"> Sí, pero trabajo</label>
+<label><input type="radio" name="q3" value="3"> Sí, severo</label></div>
+<div class="question"><p>4. ¿Sientes mareos?</p>
+<label><input type="radio" name="q4" value="0" required> No</label>
+<label><input type="radio" name="q4" value="2"> Leve</label>
+<label><input type="radio" name="q4" value="3"> Sí, notable</label></div></div>
+<div class="section"><h3>3. Salud Mental</h3>
+<div class="question"><p>5. ¿Preocupaciones te distraen?</p>
+<label><input type="radio" name="q5" value="0" required> No</label>
+<label><input type="radio" name="q5" value="2"> Algunas</label>
+<label><input type="radio" name="q5" value="3"> Sí, muchas</label></div>
+<div class="question"><p>6. ¿Te sientes irritable?</p>
+<label><input type="radio" name="q6" value="0" required> No</label>
+<label><input type="radio" name="q6" value="2"> Un poco</label>
+<label><input type="radio" name="q6" value="3"> Sí, mucho</label></div></div>
+<div class="section"><h3>4. Sustancias</h3>
+<div class="question"><p>7. ¿Consumiste alcohol/sustancias (24h)?</p>
+<label><input type="radio" name="q7" value="0" required> No</label>
+<label><input type="radio" name="q7" value="3"> Sí</label></div>
+<div class="question"><p>8. ¿Tomaste medicamentos?</p>
+<label><input type="radio" name="q8" value="0" required> No</label>
+<label><input type="radio" name="q8" value="2"> Sí, pero bien</label>
+<label><input type="radio" name="q8" value="3"> Sí, aturdido</label></div></div>
+<div class="section"><h3>5. ATS / Condiciones de Trabajo</h3>
+<div class="question"><p>9. ¿Se realizó el Análisis de Trabajo Seguro (ATS) de la tarea de hoy?</p>
+<label><input type="radio" name="ats1" value="si" required> Sí</label>
+<label><input type="radio" name="ats1" value="no"> No</label></div>
+<div class="question"><p>10. ¿Cuenta con todos los EPP específicos requeridos para esta tarea?</p>
+<label><input type="radio" name="ats2" value="si" required> Sí</label>
+<label><input type="radio" name="ats2" value="no"> No</label></div>
+<div class="question"><p>11. ¿Conoce los procedimientos de emergencia de la zona donde trabajará?</p>
+<label><input type="radio" name="ats3" value="si" required> Sí</label>
+<label><input type="radio" name="ats3" value="no"> No</label></div></div>
+<button type="button" onclick="calcularRiesgo()">EVALUAR CAPACIDAD OPERATIVA</button>
+</form>
+<div id="resultado"></div>
+<div id="resultadoATS"></div>
+<button id="btnPDF" onclick="generarPDF()">📄 GENERAR INFORME PDF</button>
+<button id="btnEnviar" onclick="enviarPDF()">📤 ENVIAR INFORME AL SUPERVISOR</button>
+<p class="footer-autor">Sistema desarrollado y licenciado por Miguel Ángel Cabezas</p>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* ---------- LICENCIA (por dispositivo, igual que Prevención en Terreno) ---------- */
+const LIC_PUB={"kty":"EC","x":"reIygAle_2oxL5fATpSSTBYjUBqWfvE5IJu92AXDBNU","y":"FY9KOfWCSQX6YHbCdvmwdrC2n4Yc1Pr55y3LRqJROHY","crv":"P-256"};
+const TRIAL_DAYS=7;
+let LIC={state:'trial',p:null,left:TRIAL_DAYS};
+function b64u2bytes(t){t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';const b=atob(t),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
+function lget(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lset(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function cget(k){try{const m=document.cookie.match(new RegExp('(?:^|; )'+k+'=([^;]*)'));return m?decodeURIComponent(m[1]):null;}catch(e){return null;}}
+function cset(k,v){try{document.cookie=k+'='+encodeURIComponent(v)+'; max-age=315360000; path=/; SameSite=Lax';}catch(e){}}
+const licExpiry=p=>p&&p.e?new Date(p.e+'T23:59:59').getTime():0;
+async function verifyLicense(code){
+  try{
+    const parts=String(code).replace(/\s+/g,'').split('.');if(parts.length!==2)return null;
+    const payload=b64u2bytes(parts[0]),sig=b64u2bytes(parts[1]);
+    const key=await crypto.subtle.importKey('jwk',LIC_PUB,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);
+    if(!await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},key,sig,payload))return null;
+    const p=JSON.parse(new TextDecoder().decode(payload));
+    return p&&p.o?p:null;
+  }catch(e){return null;}
+}
+async function licenseStatus(){
+  const now=Date.now();
+  const code=lget('sh-lic');
+  if(code){
+    if(!(window.crypto&&crypto.subtle))return{state:'nosubtle'};
+    const p=await verifyLicense(code);
+    if(!p)return{state:'invalid'};
+    if(p.e&&now>licExpiry(p))return{state:'expired',p};
+    return{state:'licensed',p};
+  }
+  let first=[+lget('sh-t1')||0,+cget('sh_t1')||0].filter(x=>x>0).reduce((m,x)=>Math.min(m,x),Infinity);
+  if(!isFinite(first))first=now;
+  lset('sh-t1',String(first));cset('sh_t1',String(first));
+  const used=(now-first)/86400000;
+  if(used>TRIAL_DAYS)return{state:'trial_over'};
+  return{state:'trial',left:Math.max(1,Math.ceil(TRIAL_DAYS-used))};
+}
+function showLock(mode){
+  const T={
+    trial_over:['⏳ PERIODO DE PRUEBA FINALIZADO','Los 7 días de prueba gratuita han concluido.'],
+    expired:['Licencia vencida','La licencia de «'+(LIC.p?LIC.p.o:'')+'» venció.'],
+    invalid:['Código no válido','El código guardado no se pudo verificar. Ingresa un código válido.'],
+    nosubtle:['No se puede verificar la licencia','Este navegador no permite verificar la licencia. Abre la aplicación desde su enlace https.']
+  }[mode]||['Licencia',''];
+  document.getElementById('lockTitle').textContent=T[0];
+  document.getElementById('lockMsg').textContent=T[1];
+  document.getElementById('lockErr').style.display='none';
+  document.getElementById('evaluacionForm').style.display='none';
+  document.getElementById('mensajeExpirado').style.display='block';
+}
+async function activarLicencia(){
+  const err=document.getElementById('lockErr');
+  const code=document.getElementById('lockCode').value.replace(/\s+/g,'');
+  err.style.display='none';
+  if(!code){err.textContent='Pega el código de licencia.';err.style.display='block';return;}
+  if(!(window.crypto&&crypto.subtle)){err.textContent='Este navegador no permite verificar la licencia.';err.style.display='block';return;}
+  const p=await verifyLicense(code);
+  if(!p){err.textContent='El código no es válido. Revisa que esté completo y sin cortes.';err.style.display='block';return;}
+  if(p.e&&Date.now()>licExpiry(p)){err.textContent='Este código ya venció.';err.style.display='block';return;}
+  lset('sh-lic',code);
+  await initLicense();
+}
+async function initLicense(){
+  const st=await licenseStatus();LIC=st;
+  const bar=document.getElementById('licBar');bar.style.display='none';
+  document.getElementById('mensajeExpirado').style.display='none';
+  document.getElementById('evaluacionForm').style.display='block';
+  if(st.state==='licensed'){
+    bar.style.display='flex';bar.innerHTML='<span>Licenciado a «'+st.p.o+'»</span>';
+  }else if(st.state==='trial'){
+    bar.style.display='flex';
+    bar.innerHTML='<span>Prueba gratuita: quedan '+st.left+' día'+(st.left===1?'':'s')+'.</span>';
+  }else{
+    showLock(st.state);
+  }
+}
+initLicense();
+</script>
+<script>
+let ultimoResultado=null;let ultimoPdfBlob=null;let ultimoPdfNombre=null;
+function calcularRiesgo(){
+const nombre=document.getElementById('nombreTrabajador').value.trim();
+const rut=document.getElementById('rutTrabajador').value.trim();
+const empresa=document.getElementById('empresaTrabajador').value.trim();
+if(!nombre||!rut||!empresa){alert("Completa Nombre, RUT y Empresa.");return;}
+const form=document.getElementById('evaluacionForm');const formData=new FormData(form);let puntajeTotal=0;let preguntasRespondidas=0;
+let ats1,ats2,ats3;
+for(let pair of formData.entries()){
+if(pair[0].startsWith('q')){puntajeTotal+=parseInt(pair[1]);preguntasRespondidas++;}
+if(pair[0]==='ats1')ats1=pair[1];
+if(pair[0]==='ats2')ats2=pair[1];
+if(pair[0]==='ats3')ats3=pair[1];
+}
+if(preguntasRespondidas<8||!ats1||!ats2||!ats3){alert("Responde todas las preguntas, incluida la sección ATS.");return;}
+const resultadoDiv=document.getElementById('resultado');let estado,clase,recomendacion;
+if(puntajeTotal<=3){estado="🟢 VERDE: CAPACIDAD COMPLETA";clase="verde";recomendacion="Apto para todo tipo de trabajo.";}
+else if(puntajeTotal<=7){estado="🟡 AMARILLO: OBSERVACIÓN";clase="amarillo";recomendacion="No operar maquinaria pesada ni trabajar en altura.";}
+else{estado="🔴 ROJO: NO APTO";clase="rojo";recomendacion="Derivar a evaluación. No ingresar a zona de obra.";}
+resultadoDiv.className=clase;resultadoDiv.style.display="block";resultadoDiv.innerHTML=`<h2>${estado}</h2><p>${recomendacion}</p>`;
+const atsDiv=document.getElementById('resultadoATS');
+const atsProblemas=[];
+if(ats1==='no')atsProblemas.push("No se realizó el ATS de la tarea");
+if(ats2==='no')atsProblemas.push("Faltan EPP requeridos");
+if(ats3==='no')atsProblemas.push("No conoce procedimientos de emergencia de la zona");
+let atsEstadoTexto,atsClase;
+if(atsProblemas.length>0){
+atsClase="rojo";atsEstadoTexto=`⚠️ ATS INCOMPLETO: ${atsProblemas.join(", ")}. No ingresar a la tarea hasta regularizar.`;
+}else{
+atsClase="verde";atsEstadoTexto="✅ ATS Completo: condiciones de la tarea verificadas.";
+}
+atsDiv.className=atsClase;atsDiv.style.display="block";atsDiv.innerHTML=`<p>${atsEstadoTexto}</p>`;
+ultimoResultado={nombre,rut,empresa,estado,recomendacion,puntajeTotal,ats1,ats2,ats3,atsProblemas,fecha:new Date().toLocaleString('es-CL')};
+document.getElementById('btnPDF').style.display='block';
+document.getElementById('btnEnviar').style.display='none';
+ultimoPdfBlob=null;
+}
+function construirPDF(){
+const{jsPDF}=window.jspdf;const doc=new jsPDF();
+doc.setFontSize(16);doc.text("SISTEMA SEMÁFORO HUMANO",20,20);
+doc.setFontSize(11);doc.text("Evaluación Predictiva de Capacidad Operativa",20,28);
+doc.line(20,32,190,32);
+doc.setFontSize(12);
+doc.text(`Empresa: ${ultimoResultado.empresa}`,20,42);
+doc.text(`Trabajador: ${ultimoResultado.nombre}`,20,50);
+doc.text(`RUT: ${ultimoResultado.rut}`,20,58);
+doc.text(`Fecha y hora: ${ultimoResultado.fecha}`,20,66);
+doc.line(20,72,190,72);
+doc.setFontSize(14);
+doc.text(`Resultado salud: ${ultimoResultado.estado.replace(/[🟢🟡🔴]/g,'')}`,20,84);
+doc.setFontSize(11);
+doc.text(`Puntaje total: ${ultimoResultado.puntajeTotal}`,20,92);
+doc.text(`Recomendación: ${ultimoResultado.recomendacion}`,20,100,{maxWidth:170});
+doc.line(20,112,190,112);
+doc.setFontSize(13);
+doc.text("Sección ATS / Condiciones de Trabajo:",20,122);
+doc.setFontSize(11);
+doc.text(`ATS realizado: ${ultimoResultado.ats1==='si'?'Sí':'No'}`,20,130);
+doc.text(`EPP completo: ${ultimoResultado.ats2==='si'?'Sí':'No'}`,20,138);
+doc.text(`Procedimientos de emergencia conocidos: ${ultimoResultado.ats3==='si'?'Sí':'No'}`,20,146);
+if(ultimoResultado.atsProblemas.length>0){
+doc.setFontSize(11);
+doc.text(`⚠ Observaciones: ${ultimoResultado.atsProblemas.join(", ")}`,20,156,{maxWidth:170});
+}
+doc.line(20,175,190,175);
+doc.text("Firma trabajador: ______________________________",20,195);
+doc.text("Firma supervisor: ______________________________",20,210);
+doc.text("Sistema desarrollado y licenciado por Miguel Ángel Cabezas",20,285);
+return doc;
+}
+function generarPDF(){
+if(!ultimoResultado){alert("Primero evalúa la capacidad operativa.");return;}
+const doc=construirPDF();
+ultimoPdfNombre=`informe_${ultimoResultado.nombre.replace(/\s+/g,'_')}_${Date.now()}.pdf`;
+doc.save(ultimoPdfNombre);
+ultimoPdfBlob=doc.output('blob');
+document.getElementById('btnEnviar').style.display='block';
+}
+async function enviarPDF(){
+if(!ultimoPdfBlob){alert("Primero genera el informe PDF.");return;}
+const archivo=new File([ultimoPdfBlob],ultimoPdfNombre,{type:'application/pdf'});
+if(navigator.share&&navigator.canShare&&navigator.canShare({files:[archivo]})){
+try{
+await navigator.share({
+files:[archivo],
+title:'Informe Semáforo Humano',
+text:`Informe de evaluación - ${ultimoResultado.nombre} - ${ultimoResultado.estado.replace(/[🟢🟡🔴]/g,'')}`
+});
+}catch(err){
+if(err.name!=='AbortError'){alert("No se pudo compartir el archivo. Intenta enviarlo manualmente desde tus Descargas.");}
+}
+}else{
+alert("Tu navegador no permite enviar el PDF directamente. Búscalo en la carpeta Descargas de tu celular y envíalo por WhatsApp manualmente.");
+}
+}
+</script>
+</body>
+</html>
