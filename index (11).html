@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Semáforo Humano</title>
+<link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#2c3e50">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Semáforo">
+<style>
+body{font-family:Arial,sans-serif;background:#f4f6f9;color:#333;max-width:600px;margin:0 auto;padding:20px}.header{background:#2c3e50;color:white;padding:20px;border-radius:10px 10px 0 0;text-align:center}.container{background:white;padding:25px;border-radius:0 0 10px 10px;box-shadow:0 4px 15px rgba(0,0,0,0.1)}.section{margin-bottom:25px;border-bottom:1px solid #eee;padding-bottom:15px}.section h3{color:#2980b9;margin-bottom:15px}.question{margin-bottom:15px}.question p{font-weight:600;margin-bottom:8px;font-size:0.95em}label{display:block;margin-bottom:6px;cursor:pointer;padding:8px;border-radius:5px}label:hover{background-color:#f0f8ff}input[type="radio"]{margin-right:10px}input[type="text"]{width:100%;padding:10px;margin-bottom:12px;border:1px solid #ccc;border-radius:6px;box-sizing:border-box;font-size:1em}button{width:100%;padding:15px;background-color:#27ae60;color:white;border:none;border-radius:8px;font-size:1.1em;font-weight:bold;cursor:pointer;margin-top:10px}button:hover{background-color:#219150}#resultado{display:none;margin-top:25px;padding:20px;border-radius:8px;text-align:center}#resultadoATS{display:none;margin-top:15px;padding:15px;border-radius:8px;text-align:center;font-weight:bold}.verde{background-color:#d4edda;color:#155724;border:2px solid #c3e6cb}.amarillo{background-color:#fff3cd;color:#856404;border:2px solid #ffeeba}.rojo{background-color:#f8d7da;color:#721c24;border:2px solid #f5c6cb}#mensajeExpirado{display:none;text-align:center;padding:30px;background:#fff3cd;border:2px solid #ffeeba;border-radius:10px}#mensajeExpirado h2{color:#856404}.btn-whatsapp{display:inline-block;background-color:#25D366;color:white;padding:12px 25px;text-decoration:none;border-radius:8px;font-weight:bold;margin-top:10px}#btnPDF{background-color:#2980b9;display:none}#btnPDF:hover{background-color:#1f618d}#btnEnviar{background-color:#8e44ad;display:none}#btnEnviar:hover{background-color:#6c3483}.footer-autor{text-align:center;color:#888;font-size:0.8em;margin-top:20px}
+.licbar{display:flex;justify-content:space-between;align-items:center;gap:10px;background:#fff3cd;color:#856404;border-radius:8px;padding:10px 14px;font-size:14px;font-weight:600;margin:0 0 12px}
+.licbar button{width:auto;padding:6px 12px;font-size:13px;margin:0;background:transparent;color:#856404;border:1.5px solid #856404}
+#lockCode{width:100%;min-height:80px;padding:10px;border:1.5px solid #ccc;border-radius:6px;box-sizing:border-box;font-size:0.95em;margin-bottom:10px}
+.lockerr{color:#721c24;font-weight:600;margin:8px 0;display:none}
+.aviso{background:#eaf2f8;border-left:4px solid #2980b9;border-radius:6px;padding:10px 12px;font-size:0.85em;margin:0 0 15px;color:#1b4f72}
+.priv{display:none;margin-top:15px;padding:15px;border-radius:8px;background:#eef6ff;border:2px solid #aed6f1;color:#1b4f72;font-size:0.95em}
+.priv button{background:#7f8c8d;font-size:0.9em;padding:10px}
+details{margin-top:20px;font-size:0.85em;color:#555}details summary{cursor:pointer;font-weight:bold}
+</style>
+</head>
+<body>
+<div class="header"><h2>🚦 SISTEMA SEMÁFORO HUMANO</h2><p>Alerta temprana preventiva de capacidad operativa</p></div>
+<div class="container">
+
+<div id="licBar" class="licbar" style="display:none"></div>
+
+<div id="mensajeExpirado" style="display:none"><h2 id="lockTitle">⏳ PERIODO DE PRUEBA FINALIZADO</h2><p id="lockMsg">Los 7 días de prueba gratuita han concluido.</p>
+<textarea id="lockCode" placeholder="Pega aquí el código de licencia que recibiste"></textarea>
+<p id="lockErr" class="lockerr"></p>
+<button type="button" onclick="activarLicencia()">Activar licencia</button>
+<button type="button" id="lockBack" style="display:none;background:#7f8c8d" onclick="initLicense()">Volver a la prueba</button>
+<p>Para adquirir la licencia, contáctame:</p><a href="https://wa.me/56957577510" class="btn-whatsapp" target="_blank">📲 Contactar a Miguel Ángel Cabezas</a></div>
+
+<form id="evaluacionForm">
+<div class="aviso"><b>Importante:</b> esta herramienta es una alerta preventiva para apoyar la decisión del supervisor ese día. <b>No es un examen médico ni certifica aptitud laboral.</b> Tus respuestas no se envían a ningún servidor: solo quedan en el informe PDF que generes. Son datos de salud sensibles (Ley 19.628); manéjalos con reserva.</div>
+<div class="section"><h3>Datos del Trabajador</h3>
+<input type="text" id="nombreTrabajador" placeholder="Nombre completo" required>
+<input type="text" id="rutTrabajador" placeholder="RUT" required>
+<input type="text" id="empresaTrabajador" placeholder="Empresa / Obra" required>
+</div>
+<div class="section"><h3>1. Fatiga y Sueño</h3>
+<div class="question"><p>1. ¿Cuántas horas dormiste?</p>
+<label><input type="radio" name="q1" value="0" required> 7+ horas</label>
+<label><input type="radio" name="q1" value="2"> 5-6 horas</label>
+<label><input type="radio" name="q1" value="3"> Menos de 5 horas</label></div>
+<div class="question"><p>2. ¿Tu atención está lenta?</p>
+<label><input type="radio" name="q2" value="0" required> No, estoy alerta</label>
+<label><input type="radio" name="q2" value="2"> Un poco</label>
+<label><input type="radio" name="q2" value="3"> Sí, mucho (me cuesta concentrarme o estoy confundido)</label></div></div>
+<div class="section"><h3>2. Salud Física</h3>
+<div class="question"><p>3. ¿Sientes dolor muscular?</p>
+<label><input type="radio" name="q3" value="0" required> No o leve</label>
+<label><input type="radio" name="q3" value="2"> Sí, pero trabajo</label>
+<label><input type="radio" name="q3" value="3"> Sí, severo</label></div>
+<div class="question"><p>4. ¿Sientes mareos?</p>
+<label><input type="radio" name="q4" value="0" required> No</label>
+<label><input type="radio" name="q4" value="2"> Leve</label>
+<label><input type="radio" name="q4" value="3"> Sí, notable o fuerte</label></div></div>
+<div class="section"><h3>3. Salud Mental</h3>
+<div class="question"><p>5. ¿Preocupaciones te distraen?</p>
+<label><input type="radio" name="q5" value="0" required> No</label>
+<label><input type="radio" name="q5" value="2"> Algunas</label>
+<label><input type="radio" name="q5" value="3"> Sí, muchas</label></div>
+<div class="question"><p>6. ¿Te sientes irritable?</p>
+<label><input type="radio" name="q6" value="0" required> No</label>
+<label><input type="radio" name="q6" value="2"> Un poco</label>
+<label><input type="radio" name="q6" value="3"> Sí, mucho</label></div>
+<div class="question"><p>Bienestar emocional: ¿hoy sientes que tu estado emocional te impide trabajar con seguridad?</p>
+<label><input type="radio" name="emo" value="no" required> No</label>
+<label><input type="radio" name="emo" value="si"> Sí (no tienes que explicar el motivo)</label></div></div>
+<div class="section"><h3>4. Sustancias</h3>
+<div class="question"><p>7. ¿Consumiste alcohol/sustancias (24h)?</p>
+<label><input type="radio" name="q7" value="0" required> No</label>
+<label><input type="radio" name="q7" value="3"> Sí</label></div>
+<div class="question"><p>8. ¿Tomaste medicamentos?</p>
+<label><input type="radio" name="q8" value="0" required> No</label>
+<label><input type="radio" name="q8" value="2"> Sí, pero bien</label>
+<label><input type="radio" name="q8" value="3"> Sí, aturdido</label></div></div>
+<div class="section"><h3>5. ATS / Condiciones de Trabajo</h3>
+<div class="question"><p>9. ¿Se realizó el Análisis de Trabajo Seguro (ATS) de la tarea de hoy?</p>
+<label><input type="radio" name="ats1" value="si" required> Sí</label>
+<label><input type="radio" name="ats1" value="no"> No</label></div>
+<div class="question"><p>10. ¿Cuenta con todos los EPP específicos requeridos para esta tarea?</p>
+<label><input type="radio" name="ats2" value="si" required> Sí</label>
+<label><input type="radio" name="ats2" value="no"> No</label></div>
+<div class="question"><p>11. ¿Conoce los procedimientos de emergencia de la zona donde trabajará?</p>
+<label><input type="radio" name="ats3" value="si" required> Sí</label>
+<label><input type="radio" name="ats3" value="no"> No</label></div></div>
+<button type="button" onclick="calcularRiesgo()">EVALUAR CAPACIDAD OPERATIVA</button>
+</form>
+<div id="resultado"></div>
+<div id="priv" class="priv"></div>
+<div id="resultadoATS"></div>
+<button id="btnPDF" onclick="generarPDF()">📄 GENERAR INFORME PDF</button>
+<button id="btnEnviar" onclick="enviarPDF()">📤 ENVIAR INFORME AL SUPERVISOR</button>
+<button id="btnNuevo" style="display:none;background:#7f8c8d" onclick="nuevaEvaluacion()">➕ NUEVA EVALUACIÓN (siguiente trabajador)</button>
+<details><summary>¿Cómo se calcula el semáforo?</summary>
+<p><b>1. Alertas críticas (tienen prioridad):</b> atención muy alterada, mareos notables o fuertes, consumo de alcohol o sustancias, medicación que causa aturdimiento, o un estado emocional que impide trabajar con seguridad. Si hay <b>una sola</b>, el resultado es ROJO, sin importar el resto de las respuestas.</p>
+<p><b>2. Puntaje:</b> si no hay alertas críticas, se suman las respuestas: 0 a 3 puntos = verde, 4 a 7 = amarillo, 8 o más = rojo.</p>
+<p><b>3. Estado de la herramienta:</b> los criterios son preliminares y están en revisión con profesionales de prevención de riesgos. No reemplaza la evaluación médica ocupacional ni el juicio del supervisor.</p>
+<p><b>4. Qué hacer con un rojo:</b> no iniciar la tarea, conversar en privado con el trabajador y definir una acción (reasignar a una tarea de menor riesgo, descanso u observación, derivación a evaluación médica o a la mutual) con seguimiento. El informe PDF incluye un espacio para registrarlo.</p></details>
+<p class="footer-autor">Sistema desarrollado y licenciado por Miguel Ángel Cabezas</p>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script>
+/* ---------- LICENCIA (por dispositivo, igual que Prevención en Terreno) ---------- */
+const LIC_PUB={"kty":"EC","x":"reIygAle_2oxL5fATpSSTBYjUBqWfvE5IJu92AXDBNU","y":"FY9KOfWCSQX6YHbCdvmwdrC2n4Yc1Pr55y3LRqJROHY","crv":"P-256"};
+const TRIAL_DAYS=7;
+let LIC={state:'trial',p:null,left:TRIAL_DAYS};
+function b64u2bytes(t){t=t.replace(/-/g,'+').replace(/_/g,'/');while(t.length%4)t+='=';const b=atob(t),a=new Uint8Array(b.length);for(let i=0;i<b.length;i++)a[i]=b.charCodeAt(i);return a;}
+function lget(k){try{return localStorage.getItem(k);}catch(e){return null;}}
+function lset(k,v){try{localStorage.setItem(k,v);}catch(e){}}
+function cget(k){try{const m=document.cookie.match(new RegExp('(?:^|; )'+k+'=([^;]*)'));return m?decodeURIComponent(m[1]):null;}catch(e){return null;}}
+function cset(k,v){try{document.cookie=k+'='+encodeURIComponent(v)+'; max-age=315360000; path=/; SameSite=Lax';}catch(e){}}
+const licExpiry=p=>p&&p.e?new Date(p.e+'T23:59:59').getTime():0;
+async function verifyLicense(code){
+  try{
+    const parts=String(code).replace(/\s+/g,'').split('.');if(parts.length!==2)return null;
+    const payload=b64u2bytes(parts[0]),sig=b64u2bytes(parts[1]);
+    const key=await crypto.subtle.importKey('jwk',LIC_PUB,{name:'ECDSA',namedCurve:'P-256'},false,['verify']);
+    if(!await crypto.subtle.verify({name:'ECDSA',hash:'SHA-256'},key,sig,payload))return null;
+    const p=JSON.parse(new TextDecoder().decode(payload));
+    return p&&p.o?p:null;
+  }catch(e){return null;}
+}
+async function licenseStatus(){
+  const now=Date.now();
+  const code=lget('sh-lic');
+  if(code){
+    if(!(window.crypto&&crypto.subtle))return{state:'nosubtle'};
+    const p=await verifyLicense(code);
+    if(!p)return{state:'invalid'};
+    if(p.e&&now>licExpiry(p))return{state:'expired',p};
+    return{state:'licensed',p};
+  }
+  let first=[+lget('sh-t1')||0,+cget('sh_t1')||0].filter(x=>x>0).reduce((m,x)=>Math.min(m,x),Infinity);
+  if(!isFinite(first))first=now;
+  lset('sh-t1',String(first));cset('sh_t1',String(first));
+  const used=(now-first)/86400000;
+  if(used>TRIAL_DAYS)return{state:'trial_over'};
+  return{state:'trial',left:Math.max(1,Math.ceil(TRIAL_DAYS-used))};
+}
+function showLock(mode){
+  const T={
+    trial_over:['⏳ PERIODO DE PRUEBA FINALIZADO','Los 7 días de prueba gratuita han concluido.'],
+    expired:['Licencia vencida','La licencia de «'+(LIC.p?LIC.p.o:'')+'» venció.'],
+    invalid:['Código no válido','El código guardado no se pudo verificar. Ingresa un código válido.'],
+    nosubtle:['No se puede verificar la licencia','Este navegador no permite verificar la licencia. Abre la aplicación desde su enlace https.']
+  }[mode]||['Licencia',''];
+  document.getElementById('lockTitle').textContent=T[0];
+  document.getElementById('lockMsg').textContent=T[1];
+  document.getElementById('lockBack').style.display='none';
+  document.getElementById('lockErr').style.display='none';
+  document.getElementById('evaluacionForm').style.display='none';
+  document.getElementById('mensajeExpirado').style.display='block';
+}
+function abrirActivacion(){
+  document.getElementById('lockTitle').textContent='🔑 Activar licencia';
+  document.getElementById('lockMsg').textContent='Pega el código de licencia que recibiste.';
+  document.getElementById('lockBack').style.display='block';
+  document.getElementById('lockErr').style.display='none';
+  document.getElementById('evaluacionForm').style.display='none';
+  document.getElementById('mensajeExpirado').style.display='block';
+}
+async function activarLicencia(){
+  const err=document.getElementById('lockErr');
+  const code=document.getElementById('lockCode').value.replace(/\s+/g,'');
+  err.style.display='none';
+  if(!code){err.textContent='Pega el código de licencia.';err.style.display='block';return;}
+  if(!(window.crypto&&crypto.subtle)){err.textContent='Este navegador no permite verificar la licencia.';err.style.display='block';return;}
+  const p=await verifyLicense(code);
+  if(!p){err.textContent='El código no es válido. Revisa que esté completo y sin cortes.';err.style.display='block';return;}
+  if(p.e&&Date.now()>licExpiry(p)){err.textContent='Este código ya venció.';err.style.display='block';return;}
+  lset('sh-lic',code);
+  await initLicense();
+}
+async function initLicense(){
+  const st=await licenseStatus();LIC=st;
+  const bar=document.getElementById('licBar');bar.style.display='none';
+  document.getElementById('mensajeExpirado').style.display='none';
+  document.getElementById('evaluacionForm').style.display='block';
+  if(st.state==='licensed'){
+    bar.style.display='flex';bar.innerHTML='<span>Licenciado a «'+st.p.o+'»</span>';
+  }else if(st.state==='trial'){
+    bar.style.display='flex';
+    bar.innerHTML='<span>Prueba gratuita: quedan '+st.left+' día'+(st.left===1?'':'s')+'.</span><button type="button" onclick="abrirActivacion()">Activar licencia</button>';
+  }else{
+    showLock(st.state);
+  }
+}
+initLicense();
+</script>
+<script>
+let ultimoResultado=null;let ultimoPdfBlob=null;let ultimoPdfNombre=null;
+function calcularRiesgo(){
+const nombre=document.getElementById('nombreTrabajador').value.trim();
+const rut=document.getElementById('rutTrabajador').value.trim();
+const empresa=document.getElementById('empresaTrabajador').value.trim();
+if(!nombre||!rut||!empresa){alert("Completa Nombre, RUT y Empresa.");return;}
+const form=document.getElementById('evaluacionForm');
+const val=n=>{const e=form.querySelector('input[name="'+n+'"]:checked');return e?e.value:null;};
+let puntajeTotal=0,respondidas=0;
+for(let i=1;i<=8;i++){const v=val('q'+i);if(v!==null){puntajeTotal+=parseInt(v);respondidas++;}}
+const ats1=val('ats1'),ats2=val('ats2'),ats3=val('ats3'),emo=val('emo');
+if(respondidas<8||!ats1||!ats2||!ats3||!emo){alert("Responde todas las preguntas, incluidas bienestar emocional y la sección ATS.");return;}
+/* ALERTAS CRÍTICAS INDEPENDIENTES: una sola anula cualquier puntaje */
+const vetos=[];
+if(val('q2')==='3')vetos.push('atención');
+if(val('q4')==='3')vetos.push('mareos');
+if(val('q7')==='3')vetos.push('sustancias');
+if(val('q8')==='3')vetos.push('medicación');
+if(emo==='si')vetos.push('emocional');
+const vetoActivo=vetos.length>0;
+const resultadoDiv=document.getElementById('resultado');let estado,clase,recomendacion;
+if(vetoActivo){estado="🔴 ROJO: ALERTA CRÍTICA";clase="rojo";recomendacion="No iniciar la tarea. Informar al supervisor para conversar en privado y definir una acción antes de continuar.";}
+else if(puntajeTotal<=3){estado="🟢 VERDE: SIN ALERTAS";clase="verde";recomendacion="Sin alertas. Puede iniciar la tarea con los controles habituales.";}
+else if(puntajeTotal<=7){estado="🟡 AMARILLO: PRECAUCIÓN";clase="amarillo";recomendacion="No operar maquinaria pesada ni trabajar en altura hasta que el supervisor lo evalúe.";}
+else{estado="🔴 ROJO: ALERTA ALTA";clase="rojo";recomendacion="No iniciar la tarea. Informar al supervisor para que evalúe la situación.";}
+resultadoDiv.className=clase;resultadoDiv.style.display="block";resultadoDiv.innerHTML=`<h2>${estado}</h2><p>${recomendacion}</p><p style="font-size:0.8em">Alerta preventiva. No es un examen médico ni certifica aptitud laboral.</p>`;
+const priv=document.getElementById('priv');
+if(emo==='si'){
+priv.style.display="block";
+priv.innerHTML=`<p><b>Solo para ti.</b> Gracias por avisar. No tienes que explicar el motivo a nadie. Si necesitas hablar con alguien:</p><p>📞 <b>Salud Responde: 600 360 7777</b><br>📞 <b>*4141</b> (prevención del suicidio, MINSAL)<br>🚑 Emergencia: <b>131</b> (SAMU)</p><button type="button" onclick="this.parentNode.style.display='none'">Ocultar este mensaje</button>`;
+}else{priv.style.display="none";priv.innerHTML="";}
+const atsDiv=document.getElementById('resultadoATS');
+const atsProblemas=[];
+if(ats1==='no')atsProblemas.push("No se realizó el ATS de la tarea");
+if(ats2==='no')atsProblemas.push("Faltan EPP requeridos");
+if(ats3==='no')atsProblemas.push("No conoce procedimientos de emergencia de la zona");
+let atsEstadoTexto,atsClase;
+if(atsProblemas.length>0){
+atsClase="rojo";atsEstadoTexto=`⚠️ ATS INCOMPLETO: ${atsProblemas.join(", ")}. No ingresar a la tarea hasta regularizar.`;
+}else{
+atsClase="verde";atsEstadoTexto="✅ ATS Completo: condiciones de la tarea verificadas.";
+}
+atsDiv.className=atsClase;atsDiv.style.display="block";atsDiv.innerHTML=`<p>${atsEstadoTexto}</p>`;
+ultimoResultado={nombre,rut,empresa,estado,recomendacion,puntajeTotal,vetoActivo,ats1,ats2,ats3,atsProblemas,fecha:new Date().toLocaleString('es-CL')};
+document.getElementById('btnPDF').style.display='block';
+document.getElementById('btnEnviar').style.display='none';
+document.getElementById('btnNuevo').style.display='block';
+ultimoPdfBlob=null;
+}
+function nuevaEvaluacion(){
+if(!ultimoPdfBlob&&!confirm("Aún no generaste el informe de este trabajador. ¿Empezar una nueva evaluación igual? Se borrarán sus respuestas.")){return;}
+document.getElementById('evaluacionForm').reset();
+['resultado','priv','resultadoATS','btnPDF','btnEnviar','btnNuevo'].forEach(id=>{document.getElementById(id).style.display='none';});
+document.getElementById('priv').innerHTML='';
+ultimoResultado=null;ultimoPdfBlob=null;ultimoPdfNombre=null;
+window.scrollTo(0,0);
+}
+function construirPDF(){
+const{jsPDF}=window.jspdf;const doc=new jsPDF();const r=ultimoResultado;
+doc.setFontSize(16);doc.text("SISTEMA SEMÁFORO HUMANO",20,20);
+doc.setFontSize(11);doc.text("Alerta temprana preventiva de capacidad operativa",20,28);
+doc.line(20,32,190,32);
+doc.setFontSize(12);
+doc.text(`Empresa: ${r.empresa}`,20,42);
+doc.text(`Trabajador: ${r.nombre}`,20,50);
+doc.text(`RUT: ${r.rut}`,20,58);
+doc.text(`Fecha y hora: ${r.fecha}`,20,66);
+doc.line(20,72,190,72);
+doc.setFontSize(14);
+doc.text(`Resultado: ${r.estado.replace(/[🟢🟡🔴]/g,'').trim()}`,20,84);
+doc.setFontSize(11);
+doc.text(`Puntaje total: ${r.puntajeTotal}`,20,92);
+doc.text(`Alerta crítica independiente: ${r.vetoActivo?'SÍ (conversar en privado con el trabajador)':'No'}`,20,100,{maxWidth:170});
+doc.text(`Recomendación: ${r.recomendacion}`,20,108,{maxWidth:170});
+doc.line(20,124,190,124);
+doc.setFontSize(13);
+doc.text("Sección ATS / Condiciones de Trabajo:",20,134);
+doc.setFontSize(11);
+doc.text(`ATS realizado: ${r.ats1==='si'?'Sí':'No'}`,20,142);
+doc.text(`EPP completo: ${r.ats2==='si'?'Sí':'No'}`,20,150);
+doc.text(`Procedimientos de emergencia conocidos: ${r.ats3==='si'?'Sí':'No'}`,20,158);
+if(r.atsProblemas.length>0){
+doc.text(`Observaciones: ${r.atsProblemas.join(", ")}`,20,166,{maxWidth:170});
+}
+doc.line(20,178,190,178);
+doc.setFontSize(12);
+doc.text("Acciones y seguimiento (completa el supervisor):",20,188);
+doc.setFontSize(11);
+doc.text("[  ] Reasignación a tarea de menor riesgo",20,196);
+doc.text("[  ] Descanso u observación",20,203);
+doc.text("[  ] Derivación a evaluación médica o mutual",20,210);
+doc.text("Seguimiento (fecha y responsable): ____________________________",20,219);
+doc.text("Firma trabajador: ______________________________",20,238);
+doc.text("Firma supervisor: ______________________________",20,252);
+doc.setFontSize(9);
+doc.text("Alerta preventiva. No es un examen médico ni certifica aptitud laboral. Contiene información de salud sensible (Ley 19.628): manejar con reserva.",20,270,{maxWidth:170});
+doc.text("Sistema desarrollado y licenciado por Miguel Ángel Cabezas",20,286);
+return doc;
+}
+function generarPDF(){
+if(!ultimoResultado){alert("Primero evalúa la capacidad operativa.");return;}
+const doc=construirPDF();
+ultimoPdfNombre=`informe_${ultimoResultado.nombre.replace(/\s+/g,'_')}_${Date.now()}.pdf`;
+doc.save(ultimoPdfNombre);
+ultimoPdfBlob=doc.output('blob');
+document.getElementById('btnEnviar').style.display='block';
+}
+async function enviarPDF(){
+if(!ultimoPdfBlob){alert("Primero genera el informe PDF.");return;}
+const archivo=new File([ultimoPdfBlob],ultimoPdfNombre,{type:'application/pdf'});
+if(navigator.share&&navigator.canShare&&navigator.canShare({files:[archivo]})){
+try{
+await navigator.share({
+files:[archivo],
+title:'Informe Semáforo Humano',
+text:`Informe de evaluación - ${ultimoResultado.nombre} - ${ultimoResultado.estado.replace(/[🟢🟡🔴]/g,'').trim()}`
+});
+}catch(err){
+if(err.name!=='AbortError'){alert("No se pudo compartir el archivo. Intenta enviarlo manualmente desde tus Descargas.");}
+}
+}else{
+alert("Tu navegador no permite enviar el PDF directamente. Búscalo en la carpeta Descargas de tu celular y envíalo por WhatsApp manualmente.");
+}
+}
+</script>
+<button id="btnInstalar" style="display:none;position:fixed;bottom:20px;right:20px;width:auto;margin:0;background:#2c3e50;color:white;padding:12px 20px;border:none;border-radius:8px;font-size:16px;z-index:9999;">📲 Instalar App</button>
+<script>
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt',(e)=>{
+  e.preventDefault();
+  deferredPrompt=e;
+  document.getElementById('btnInstalar').style.display='block';
+});
+document.getElementById('btnInstalar').addEventListener('click',async()=>{
+  if(!deferredPrompt)return;
+  deferredPrompt.prompt();
+  await deferredPrompt.userChoice;
+  deferredPrompt=null;
+  document.getElementById('btnInstalar').style.display='none';
+});
+</script>
+</body>
+</html>
